@@ -91,11 +91,18 @@ def create_app(test_config=None, db=db):
             movie_title = "Tomates Verdes Fritos"
             release_date_str = "1991"
             release_date_datetime = datetime.strptime(release_date_str, "%Y")
+            stmt_select_actor_by_id = select(Actor).where(Actor.id == 1)
+            data_actor_by_id = db.session.scalars(stmt_select_actor_by_id).one()
+            actors_by_id_list = [data_actor_by_id]
 
             if movie_title is None or release_date_str is None:
                 abort(400)
 
-            new_movie = Movie(title=movie_title, release_date=release_date_datetime)
+            new_movie = Movie(
+                title=movie_title,
+                release_date=release_date_datetime,
+                actors=actors_by_id_list,
+            )
             db.session.add(new_movie)
             db.session.commit()
             # return redirect(
@@ -106,6 +113,38 @@ def create_app(test_config=None, db=db):
             # )
             return (
                 jsonify({"success": True, "movie": new_movie.short()}),
+                200,
+            )
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            abort(500)
+        finally:
+            db.session.close()
+
+    @app.route("/actors", methods=["POST"])
+    def post_actor():
+        try:
+            # data = request.get_json()
+            # drink_title = data.get("title", None)
+            # drink_recipe = json.dumps(data.get("recipe", None))
+            actor_name = "Danilo Hank"
+            actor_age = 36
+            actor_gender = Gender.MALE
+
+            if actor_name is None or actor_age is None or actor_gender is None:
+                abort(400)
+
+            new_actor = Actor(name=actor_name, age=actor_age, gender=actor_gender)
+            db.session.add(new_actor)
+            db.session.commit()
+            # return redirect(
+            #     url_for(
+            #         "get_drinks",
+            #         result=jsonify({"success": True, "drinks": new_drink.long()}),
+            #     )
+            # )
+            return (
+                jsonify({"success": True, "actor": new_actor.short()}),
                 200,
             )
         except SQLAlchemyError as e:

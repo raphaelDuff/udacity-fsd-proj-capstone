@@ -13,7 +13,7 @@ db = SQLAlchemy(model_class=Base)
 
 
 actor_movie_association = Table(
-    "actor_movie",
+    "actors_movies",
     Base.metadata,
     Column("actor_id", Integer, ForeignKey("actors.id"), primary_key=True),
     Column("movie_id", Integer, ForeignKey("movies.id"), primary_key=True),
@@ -26,13 +26,9 @@ class Movie(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     title: Mapped[str] = mapped_column(nullable=False)
     release_date: Mapped[str] = mapped_column(Date, nullable=False)
-    actors = relationship(
+    actors: Mapped[list["Actor"]] = relationship(
         "Actor", secondary=actor_movie_association, back_populates="movies"
     )
-
-    def __init__(self, title, release_date):
-        self.title = title
-        self.release_date = release_date
 
     def short(self):
         return {"id": self.id, "title": self.title, "release_date": self.release_date}
@@ -52,23 +48,19 @@ class Actor(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False)
     age: Mapped[int] = mapped_column(nullable=False)
-    gender: Mapped[Gender] = mapped_column(Enum(Gender), nullable=False)
+    gender: Mapped[Gender] = mapped_column(
+        Enum(Gender, name="gender_enum"), nullable=False
+    )
     movies: Mapped[list[Movie]] = relationship(
         "Movie", secondary=actor_movie_association, back_populates="actors"
     )
-
-    def __init__(self, id, name, age, gender):
-        self.id = id
-        self.name = name
-        self.age = age
-        self.gender = gender
 
     def short(self):
         return {
             "id": self.id,
             "name": self.name,
             "age": self.age,
-            "gender": self.gender,
+            "gender": self.gender.value,
         }
 
     def __repr__(self):
