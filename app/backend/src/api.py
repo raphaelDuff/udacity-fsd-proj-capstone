@@ -85,32 +85,43 @@ def create_app(test_config=None, db=db):
     @app.route("/movies", methods=["POST"])
     def post_movie():
         try:
-            # data = request.get_json()
-            # drink_title = data.get("title", None)
-            # drink_recipe = json.dumps(data.get("recipe", None))
-            movie_title = "Tomates Verdes Fritos"
-            release_date_str = "1991"
-            release_date_datetime = datetime.strptime(release_date_str, "%Y")
-            stmt_select_actor_by_id = select(Actor).where(Actor.id == 1)
-            data_actor_by_id = db.session.scalars(stmt_select_actor_by_id).one()
-            actors_by_id_list = [data_actor_by_id]
-
-            if movie_title is None or release_date_str is None:
+            data_json = request.get_json()
+            if not data_json:
                 abort(400)
 
-            new_movie = Movie(
-                title=movie_title,
-                release_date=release_date_datetime,
-                actors=actors_by_id_list,
-            )
+            data_json_movie_title = data_json.get("title", None)
+            data_json_release_date = data_json.get("release_date", None)
+            data_json_actors = data_json.get("actors", None)
+            print(data_json)
+
+            ##
+            # movie_title = "Tomates Verdes Fritos"
+            # release_date_str = "1991"
+            # release_date_datetime = datetime.strptime(release_date_str, "%Y")
+            ##
+
+            if data_json_movie_title is None or data_json_release_date is None:
+                abort(400)
+
+            release_date_datetime = datetime.strptime(str(data_json_release_date), "%Y")
+
+            if data_json_actors is None:
+                new_movie = Movie(
+                    title=data_json_movie_title, release_date=release_date_datetime
+                )
+            else:
+                stmt_select_actors_by_ids = select(Actor).where(
+                    Actor.id.in_(data_json_actors)
+                )
+                actors_by_id_list = db.session.scalars(stmt_select_actors_by_ids).all()
+                new_movie = Movie(
+                    title=data_json_movie_title,
+                    release_date=release_date_datetime,
+                    actors=actors_by_id_list,
+                )
+
             db.session.add(new_movie)
             db.session.commit()
-            # return redirect(
-            #     url_for(
-            #         "get_drinks",
-            #         result=jsonify({"success": True, "drinks": new_drink.long()}),
-            #     )
-            # )
             return (
                 jsonify({"success": True, "movie": new_movie.short()}),
                 200,
