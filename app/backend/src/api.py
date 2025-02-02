@@ -51,27 +51,8 @@ def create_app(test_config=None, db=db):
     db.init_app(app)
     with app.app_context():
         db.create_all()
-        # drink_recipe = '[{"name": "water", "color": "blue", "parts": 1}]'
-        # drink = Drink(title="water", recipe=drink_recipe)
-        # drink2_recipe = '[{"name": "fanta", "color": "orange", "parts": 1}]'
-        # drink2 = Drink(title="fanta", recipe=drink2_recipe)
-        # drink3_recipe = '[{"name": "coca", "color": "black", "parts": 1}]'
-        # drink3 = Drink(title="coca", recipe=drink3_recipe)
-        # db.session.add(drink)
-        # db.session.add(drink2)
-        # db.session.add(drink3)
-        # db.session.commit()
 
     # ROUTES
-
-    # @app.route("/movie-details/<int:id>", methods=["GET"])
-    # # @requires_auth("get:drinks-detail")
-    # def get_drinks_detail(id):
-    #     stmt_movie_by_id = select(Movie).where(Movie.id == id)
-    #     selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
-    #     if selected_movie is None:
-    #         abort(404)
-    #     return jsonify({"success": True, "movie": list_drinks})
 
     @app.route("/movies", methods=["GET"])
     def get_movies():
@@ -81,6 +62,14 @@ def create_app(test_config=None, db=db):
         if len(movies) == 0:
             abort(404)
         return jsonify({"success": True, "movies": list_movies})
+
+    @app.route("/movie-detail/<int:id>", methods=["GET"])
+    def get_movie_detail(id):
+        stmt_movie_by_id = select(Movie).where(Movie.id == id)
+        selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
+        if selected_movie is None:
+            abort(404)
+        return jsonify({"success": True, "movie": selected_movie.long()})
 
     @app.route("/movies", methods=["POST"])
     def post_movie():
@@ -121,7 +110,7 @@ def create_app(test_config=None, db=db):
             db.session.commit()
 
             return (
-                jsonify({"success": True, "movie": new_movie.short()}),
+                jsonify({"success": True, "movie": new_movie.long()}),
                 200,
             )
         except SQLAlchemyError as e:
@@ -172,7 +161,7 @@ def create_app(test_config=None, db=db):
             db.session.add(selected_movie)
             db.session.commit()
             return (
-                jsonify({"success": True, "movie": selected_movie.short()}),
+                jsonify({"success": True, "movie": selected_movie.long()}),
                 200,
             )
         except SQLAlchemyError as e:
@@ -194,7 +183,7 @@ def create_app(test_config=None, db=db):
 
             return (
                 jsonify(
-                    {"success": True, "deleted": id, "movie": selected_movie.title}
+                    {"success": True, "deleted": id, "movie": selected_movie.short()}
                 ),
                 200,
             )
@@ -208,10 +197,18 @@ def create_app(test_config=None, db=db):
     def get_actors():
         stmt_select_all_actors = select(Actor).order_by(Actor.id)
         actors = db.session.scalars(stmt_select_all_actors).all()
-        list_actors = [actor.short() for actor in actors]
+        list_actors = [actor.long() for actor in actors]
         if len(actors) == 0:
             abort(404)
         return jsonify({"success": True, "actors": list_actors})
+
+    @app.route("/actor-detail/<int:id>", methods=["GET"])
+    def get_actor_detail(id):
+        stmt_actor_by_id = select(Actor).where(Actor.id == id)
+        selected_actor = db.session.scalars(stmt_actor_by_id).one_or_none()
+        if selected_actor is None:
+            abort(404)
+        return jsonify({"success": True, "actor": selected_actor.long()})
 
     @app.route("/actors", methods=["POST"])
     def post_actor():
@@ -252,7 +249,7 @@ def create_app(test_config=None, db=db):
             db.session.add(new_actor)
             db.session.commit()
             return (
-                jsonify({"success": True, "actor": new_actor.short()}),
+                jsonify({"success": True, "actor": new_actor.long()}),
                 200,
             )
         except SQLAlchemyError as e:
@@ -302,7 +299,7 @@ def create_app(test_config=None, db=db):
             db.session.add(selected_actor)
             db.session.commit()
             return (
-                jsonify({"success": True, "actor": selected_actor.short()}),
+                jsonify({"success": True, "actor": selected_actor.long()}),
                 200,
             )
         except SQLAlchemyError as e:
@@ -323,7 +320,9 @@ def create_app(test_config=None, db=db):
             db.session.commit()
 
             return (
-                jsonify({"success": True, "deleted": id, "actor": selected_actor.name}),
+                jsonify(
+                    {"success": True, "deleted": id, "actor": selected_actor.short()}
+                ),
                 200,
             )
         except SQLAlchemyError as e:

@@ -33,6 +33,17 @@ class Movie(db.Model):
     def short(self):
         return {"id": self.id, "title": self.title, "release_date": self.release_date}
 
+    def long(self):
+        actors = []
+        if len(self.actors) > 0:
+            actors = [actor.id for actor in self.actors]
+        return {
+            "id": self.id,
+            "title": self.title,
+            "release_date": self.release_date,
+            "actors": actors,
+        }
+
     def __repr__(self):
         return json.dumps(self.short())
 
@@ -61,6 +72,18 @@ class Actor(db.Model):
             "name": self.name,
             "age": self.age,
             "gender": self.gender.value,
+        }
+
+    def long(self):
+        movies = []
+        if len(self.movies) > 0:
+            movies = [movie.id for movie in self.movies]
+        return {
+            "id": self.id,
+            "name": self.name,
+            "age": self.age,
+            "gender": self.gender.value,
+            "actors": movies,
         }
 
     def __repr__(self):
