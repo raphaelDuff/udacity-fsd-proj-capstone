@@ -92,18 +92,13 @@ def create_app(test_config=None, db=db):
             data_json_movie_title = data_json.get("title", None)
             data_json_release_date = data_json.get("release_date", None)
             data_json_actors = data_json.get("actors", None)
-            print(data_json)
-
-            ##
-            # movie_title = "Tomates Verdes Fritos"
-            # release_date_str = "1991"
-            # release_date_datetime = datetime.strptime(release_date_str, "%Y")
-            ##
 
             if data_json_movie_title is None or data_json_release_date is None:
                 abort(400)
 
-            release_date_datetime = datetime.strptime(str(data_json_release_date), "%Y")
+            release_date_datetime = datetime.strptime(
+                str(data_json_release_date), "%d-%m-%Y"
+            )
 
             if data_json_actors is None:
                 new_movie = Movie(
@@ -132,28 +127,105 @@ def create_app(test_config=None, db=db):
         finally:
             db.session.close()
 
+    @app.route("/movies/<int:id>", methods=["PATCH"])
+    def update_movie(id):
+        try:
+            stmt_movie_by_id = select(Movie).where(Movie.id == id)
+            selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
+            if selected_movie is None:
+                abort(404)
+
+            data_json = request.get_json()
+            if not data_json:
+                abort(400)
+
+            selected_movie.title = data_json.get("title", selected_movie.title)
+            data_json_release_date = data_json.get(
+                "release_date", selected_movie.release_date
+            )
+
+            selected_movie.release_date = datetime.strptime(
+                str(data_json_release_date), "%d-%m-%Y"
+            )
+
+            # TODO - first retrieve the MOVIES LIST to check if there is any before update the value
+            # selected_actor.movies = data_json.get("movies", selected_actor.movies)
+
+            db.session.add(selected_movie)
+            db.session.commit()
+            return (
+                jsonify({"success": True, "movie": selected_movie.short()}),
+                200,
+            )
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            abort(500)
+        finally:
+            db.session.close()
+
+    @app.route("/movies/<int:id>", methods=["DELETE"])
+    def delete_movie(id):
+        try:
+            stmt_movie_by_id = select(Movie).where(Movie.id == id)
+            selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
+            if selected_movie is None:
+                abort(404)
+
+            db.session.delete(selected_movie)
+            db.session.commit()
+
+            return (
+                jsonify(
+                    {"success": True, "deleted": id, "movie": selected_movie.title}
+                ),
+                200,
+            )
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            abort(500)
+        finally:
+            db.session.close()
+
     @app.route("/actors", methods=["POST"])
     def post_actor():
         try:
-            # data = request.get_json()
-            # drink_title = data.get("title", None)
-            # drink_recipe = json.dumps(data.get("recipe", None))
-            actor_name = "Danilo Hank"
-            actor_age = 36
-            actor_gender = Gender.MALE
 
-            if actor_name is None or actor_age is None or actor_gender is None:
+            data_json = request.get_json()
+            if not data_json:
                 abort(400)
 
-            new_actor = Actor(name=actor_name, age=actor_age, gender=actor_gender)
+            data_json_name = data_json.get("name", None)
+            data_json_age = data_json.get("age", None)
+            data_json_gender = data_json.get("gender", None)
+            data_json_movies = data_json.get("movies", None)
+
+            if (
+                data_json_name is None
+                or data_json_age is None
+                or data_json_gender is None
+            ):
+                abort(400)
+
+            if data_json_movies is None:
+                new_actor = Actor(
+                    name=data_json_name,
+                    age=data_json_age,
+                    gender=Gender(data_json_gender.capitalize()),
+                )
+            else:
+                stmt_select_movies_by_ids = select(Movie).where(
+                    Movie.id.in_(data_json_movies)
+                )
+                movies_by_ids = db.session.scalars(stmt_select_movies_by_ids).all()
+                new_actor = Actor(
+                    name=data_json_name,
+                    age=data_json_age,
+                    gender=Gender(data_json_gender.capitalize()),
+                    movies=movies_by_ids,
+                )
+
             db.session.add(new_actor)
             db.session.commit()
-            # return redirect(
-            #     url_for(
-            #         "get_drinks",
-            #         result=jsonify({"success": True, "drinks": new_drink.long()}),
-            #     )
-            # )
             return (
                 jsonify({"success": True, "actor": new_actor.short()}),
                 200,
@@ -164,60 +236,57 @@ def create_app(test_config=None, db=db):
         finally:
             db.session.close()
 
-    # @app.route("/drinks/<int:id>", methods=["PATCH"])
-    # # @requires_auth("patch:drinks")
-    # def update_drink(token, id):
-    #     try:
-    #         stmt_drink_by_id = select(Drink).where(Drink.id == id)
-    #         selected_drink = db.session.scalars(stmt_drink_by_id).one_or_none()
-    #         if selected_drink is None:
-    #             abort(404)
+    @app.route("/actors/<int:id>", methods=["PATCH"])
+    def update_actor(id):
+        try:
+            stmt_actor_by_id = select(Actor).where(Actor.id == id)
+            selected_actor = db.session.scalars(stmt_actor_by_id).one_or_none()
+            if selected_actor is None:
+                abort(404)
 
-    #         data = request.get_json()
-    #         if not data:
-    #             abort(400)
-    #         selected_drink.title = data.get("title", selected_drink.title)
-    #         selected_drink.recipe = json.dumps(
-    #             data.get("recipe", selected_drink.recipe)
-    #         )
-    #         db.session.add(selected_drink)
-    #         db.session.commit()
-    #         return (
-    #             jsonify({"success": True, "drinks": selected_drink.long()}),
-    #             200,
-    #         )
-    #     except SQLAlchemyError as e:
-    #         db.session.rollback()
-    #         abort(500)
-    #     finally:
-    #         db.session.close()
+            data_json = request.get_json()
+            if not data_json:
+                abort(400)
 
-    # @app.route("/drinks/<int:id>", methods=["DELETE"])
-    # @requires_auth("delete:drinks")
-    # def delete_drink(token, id):
-    #     try:
-    #         stmt_drink_by_id = select(Drink).where(Drink.id == id)
-    #         selected_drink = db.session.scalars(stmt_drink_by_id).one_or_none()
-    #         if selected_drink is None:
-    #             abort(404)
+            selected_actor.name = data_json.get("name", selected_actor.name)
+            selected_actor.age = data_json.get("age", selected_actor.age)
+            selected_actor.gender = data_json.get("gender", selected_actor.gender)
+            # TODO - first retrieve the MOVIES LIST to check if there is any before update the value
+            # selected_actor.movies = data_json.get("movies", selected_actor.movies)
+            selected_actor.gender = Gender(selected_actor.gender.capitalize())
 
-    #         db.session.delete(selected_drink)
-    #         db.session.commit()
+            db.session.add(selected_actor)
+            db.session.commit()
+            return (
+                jsonify({"success": True, "actor": selected_actor.short()}),
+                200,
+            )
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            abort(500)
+        finally:
+            db.session.close()
 
-    #         return (
-    #             jsonify(
-    #                 {
-    #                     "success": True,
-    #                     "deleted": id,
-    #                 }
-    #             ),
-    #             200,
-    #         )
-    #     except SQLAlchemyError as e:
-    #         db.session.rollback()
-    #         abort(500)
-    #     finally:
-    #         db.session.close()
+    @app.route("/actors/<int:id>", methods=["DELETE"])
+    def delete_actor(id):
+        try:
+            stmt_actor_by_id = select(Actor).where(Actor.id == id)
+            selected_actor = db.session.scalars(stmt_actor_by_id).one_or_none()
+            if selected_actor is None:
+                abort(404)
+
+            db.session.delete(selected_actor)
+            db.session.commit()
+
+            return (
+                jsonify({"success": True, "deleted": id, "actor": selected_actor.name}),
+                200,
+            )
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            abort(500)
+        finally:
+            db.session.close()
 
     @app.errorhandler(400)
     def bad_request(error):
