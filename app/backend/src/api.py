@@ -43,7 +43,6 @@ def create_app(test_config=None, db=db):
 
     # Initialize the app with the extension
     app.config.from_object("src.database.config")
-    print("app config: ", app.config)
 
     if test_config:
         app.config.update(test_config)
@@ -63,7 +62,7 @@ def create_app(test_config=None, db=db):
             abort(404)
         return jsonify({"success": True, "movies": list_movies})
 
-    @app.route("/movie-detail/<int:id>", methods=["GET"])
+    @app.route("/movie-details/<int:id>", methods=["GET"])
     def get_movie_detail(id):
         stmt_movie_by_id = select(Movie).where(Movie.id == id)
         selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
@@ -202,7 +201,7 @@ def create_app(test_config=None, db=db):
             abort(404)
         return jsonify({"success": True, "actors": list_actors})
 
-    @app.route("/actor-detail/<int:id>", methods=["GET"])
+    @app.route("/actor-details/<int:id>", methods=["GET"])
     def get_actor_detail(id):
         stmt_actor_by_id = select(Actor).where(Actor.id == id)
         selected_actor = db.session.scalars(stmt_actor_by_id).one_or_none()
