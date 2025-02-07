@@ -135,6 +135,27 @@ class MoviesTestCase(unittest.TestCase):
         res = self.client.delete("/movies/666", headers=headers)
         self.assertEqual(res.status_code, 404)
 
+    def test_movies_actors_relation_ship(self):
+        """Test Movies: Movies/Actors Relationship"""
+        stmt_select_actor = select(Actor).where(Actor.name == "Brad Pitt")
+        with self.app.app_context():
+            selected_actor = db.session.scalars(stmt_select_actor).one_or_none()
+
+        res = self.client.patch(
+            "/movies/1",
+            json={
+                "title": "Fight Club",
+                "release_date": "29-10-1999",
+                "actors": [selected_actor.id],
+            },
+            headers=headers,
+        )
+
+        stmt_select_movie = select(Movie).where(Movie.id == 1)
+        with self.app.app_context():
+            selected_movie = db.session.scalars(stmt_select_movie).one_or_none()
+            self.assertEqual(selected_movie.actors[0].name, "Brad Pitt")
+
 
 if __name__ == "__main__":
     unittest.main()
