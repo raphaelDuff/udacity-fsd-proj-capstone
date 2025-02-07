@@ -11,7 +11,7 @@ from src.database.models import Actor, Gender, Movie
 
 
 load_dotenv()
-PRODUCER_TOKEN = os.getenv("TEST_TOKEN")
+PRODUCER_TOKEN = os.getenv("PRODUCER_TOKEN")
 headers = {"Authorization": f"Bearer {PRODUCER_TOKEN}"}
 
 
