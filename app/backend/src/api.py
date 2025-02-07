@@ -5,10 +5,8 @@ from flask import Flask, request, jsonify, abort
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
-
 from .database.models import *
-
-# from .auth.auth import requires_auth, AuthError
+from src.auth.auth import requires_auth, AuthError
 
 
 # Enable debug mode.
@@ -54,7 +52,8 @@ def create_app(test_config=None, db=db):
     # ROUTES
 
     @app.route("/movies", methods=["GET"])
-    def get_movies():
+    @requires_auth("get:movies")
+    def get_movies(token):
         stmt_select_all_movies = select(Movie).order_by(Movie.id)
         movies = db.session.scalars(stmt_select_all_movies).all()
         list_movies = [movie.short() for movie in movies]
@@ -63,7 +62,8 @@ def create_app(test_config=None, db=db):
         return jsonify({"success": True, "movies": list_movies})
 
     @app.route("/movie-details/<int:id>", methods=["GET"])
-    def get_movie_detail(id):
+    @requires_auth("get:movie-details")
+    def get_movie_detail(token, id):
         stmt_movie_by_id = select(Movie).where(Movie.id == id)
         selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
         if selected_movie is None:
@@ -71,7 +71,8 @@ def create_app(test_config=None, db=db):
         return jsonify({"success": True, "movie": selected_movie.long()})
 
     @app.route("/movies", methods=["POST"])
-    def post_movie():
+    @requires_auth("post:movies")
+    def post_movie(token):
         try:
             data_json = request.get_json()
             if not data_json:
@@ -119,7 +120,8 @@ def create_app(test_config=None, db=db):
             db.session.close()
 
     @app.route("/movies/<int:id>", methods=["PATCH"])
-    def update_movie(id):
+    @requires_auth("patch:movie")
+    def update_movie(token, id):
         try:
             stmt_movie_by_id = select(Movie).where(Movie.id == id)
             selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
@@ -170,7 +172,8 @@ def create_app(test_config=None, db=db):
             db.session.close()
 
     @app.route("/movies/<int:id>", methods=["DELETE"])
-    def delete_movie(id):
+    @requires_auth("del:movies")
+    def delete_movie(token, id):
         try:
             stmt_movie_by_id = select(Movie).where(Movie.id == id)
             selected_movie = db.session.scalars(stmt_movie_by_id).one_or_none()
@@ -193,7 +196,8 @@ def create_app(test_config=None, db=db):
             db.session.close()
 
     @app.route("/actors", methods=["GET"])
-    def get_actors():
+    @requires_auth("get:actors")
+    def get_actors(token):
         stmt_select_all_actors = select(Actor).order_by(Actor.id)
         actors = db.session.scalars(stmt_select_all_actors).all()
         list_actors = [actor.long() for actor in actors]
@@ -202,7 +206,8 @@ def create_app(test_config=None, db=db):
         return jsonify({"success": True, "actors": list_actors})
 
     @app.route("/actor-details/<int:id>", methods=["GET"])
-    def get_actor_detail(id):
+    @requires_auth("get:actor-details")
+    def get_actor_detail(token, id):
         stmt_actor_by_id = select(Actor).where(Actor.id == id)
         selected_actor = db.session.scalars(stmt_actor_by_id).one_or_none()
         if selected_actor is None:
@@ -210,7 +215,8 @@ def create_app(test_config=None, db=db):
         return jsonify({"success": True, "actor": selected_actor.long()})
 
     @app.route("/actors", methods=["POST"])
-    def post_actor():
+    @requires_auth("post:actors")
+    def post_actor(token):
         try:
 
             data_json = request.get_json()
@@ -258,7 +264,8 @@ def create_app(test_config=None, db=db):
             db.session.close()
 
     @app.route("/actors/<int:id>", methods=["PATCH"])
-    def update_actor(id):
+    @requires_auth("patch:actor")
+    def update_actor(token, id):
         try:
             stmt_actor_by_id = select(Actor).where(Actor.id == id)
             selected_actor = db.session.scalars(stmt_actor_by_id).one_or_none()
@@ -308,7 +315,8 @@ def create_app(test_config=None, db=db):
             db.session.close()
 
     @app.route("/actors/<int:id>", methods=["DELETE"])
-    def delete_actor(id):
+    @requires_auth("del:actors")
+    def delete_actor(token, id):
         try:
             stmt_actor_by_id = select(Actor).where(Actor.id == id)
             selected_actor = db.session.scalars(stmt_actor_by_id).one_or_none()
@@ -367,11 +375,11 @@ def create_app(test_config=None, db=db):
             500,
         )
 
-    # @app.errorhandler(AuthError)
-    # def handle_auth_error(e):
-    #     response = jsonify(e.error)
-    #     response.status_code = e.status_code
-    #     return response
+    @app.errorhandler(AuthError)
+    def handle_auth_error(e):
+        response = jsonify(e.error)
+        response.status_code = e.status_code
+        return response
 
     return app
 

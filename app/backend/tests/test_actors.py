@@ -9,8 +9,13 @@ from src.database.config import SQLALCHEMY_DATABASE_TEST_URI
 from src.database.models import Actor, Gender, Movie
 
 
+load_dotenv()
+PRODUCER_TOKEN = os.getenv("TEST_TOKEN")
+headers = {"Authorization": f"Bearer {PRODUCER_TOKEN}"}
+
+
 class ActorsTestCase(unittest.TestCase):
-    """This class represents the test case for Trivia flask app"""
+    """This class represents the test case for Actor data Model used in Flask app"""
 
     def setUp(self) -> None:
         """Define test variables and initialize app"""
@@ -49,7 +54,7 @@ class ActorsTestCase(unittest.TestCase):
 
     def test_actors_get(self):
         """Test Actors: GET Method - it should the actors"""
-        res = self.client.get("/actors")
+        res = self.client.get("/actors", headers=headers)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -57,7 +62,7 @@ class ActorsTestCase(unittest.TestCase):
 
     def test_actors_fail_put_not_allowed(self):
         """Test Movies: PUT Method - it should returns not allowed"""
-        res = self.client.put("/actors")
+        res = self.client.put("/actors", headers=headers)
         self.assertEqual(res.status_code, 405)
 
     def test_actors_post(self):
@@ -70,6 +75,7 @@ class ActorsTestCase(unittest.TestCase):
                 "gender": Gender.MALE.name,
                 "movies": [],
             },
+            headers=headers,
         )
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
@@ -85,12 +91,13 @@ class ActorsTestCase(unittest.TestCase):
                 "gender": Gender.MALE.name,
                 "movies": [],
             },
+            headers=headers,
         )
         self.assertEqual(res.status_code, 400)
 
     def test_get_actor_details(self):
         """Test Actor Details: GET Method - it should the actor details"""
-        res = self.client.get("/actor-details/1")
+        res = self.client.get("/actor-details/1", headers=headers)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -98,7 +105,7 @@ class ActorsTestCase(unittest.TestCase):
 
     def test_actor_details_fail_post_not_allowed(self):
         """Test Actor Details: Post Method - it should returns not allowed"""
-        res = self.client.post("/actor-details/1")
+        res = self.client.post("/actor-details/1", headers=headers)
         self.assertEqual(res.status_code, 405)
 
     def test_actors_patch(self):
@@ -111,6 +118,7 @@ class ActorsTestCase(unittest.TestCase):
                 "gender": Gender.MALE.name,
                 "movies": [],
             },
+            headers=headers,
         )
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
@@ -126,12 +134,13 @@ class ActorsTestCase(unittest.TestCase):
                 "gender": Gender.MALE.name,
                 "movies": [],
             },
+            headers=headers,
         )
         self.assertEqual(res.status_code, 400)
 
     def test_actors_delete(self):
         """Test Actors: Delete Method - This should delete actor that has id=1"""
-        res = self.client.delete("/actors/1")
+        res = self.client.delete("/actors/1", headers=headers)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -140,7 +149,7 @@ class ActorsTestCase(unittest.TestCase):
 
     def test_actors_delete_fail_id_not_found(self):
         """Test Actors: Delete Method - FAIL id not found"""
-        res = self.client.delete("/actors/666")
+        res = self.client.delete("/actors/666", headers=headers)
         self.assertEqual(res.status_code, 404)
 
 
