@@ -5,10 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
 from flask_migrate import Migrate
-from src.database.models import Actor, Movie, db, Gender
-from src.auth.auth import requires_auth, AuthError
-import markdown
-
+from app.database.models import Actor, Movie, db, Gender
+from app.auth.auth import requires_auth, AuthError
 
 # Enable debug mode.
 DEBUG = True
@@ -22,9 +20,6 @@ QUESTIONS_PER_PAGE = 10
 #     drinks = [drink.short() for drink in selection]
 #     current_drinks = drinks[start:end]
 #     return current_drinks
-app = Flask(
-    __name__, template_folder="src/templates"
-)  # Set the correct template folder
 
 
 def create_app(test_config=None):
@@ -44,7 +39,7 @@ def create_app(test_config=None):
         return response
 
     # Initialize the app with the extension
-    app.config.from_object("src.database.config")
+    app.config.from_object("app.database.config")
 
     if test_config:
         app.config.update(test_config)

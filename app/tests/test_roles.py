@@ -5,9 +5,9 @@ from datetime import datetime
 import unittest.mock
 from dotenv import load_dotenv
 from sqlalchemy import select
-from src.api import create_app, db
-from src.database.config import SQLALCHEMY_DATABASE_TEST_URI
-from src.database.models import Actor, Gender, Movie
+from app.api import create_app, db
+from app.database.config import SQLALCHEMY_DATABASE_TEST_URI
+from app.database.models import Actor, Gender, Movie
 
 
 load_dotenv()
