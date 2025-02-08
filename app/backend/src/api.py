@@ -1,11 +1,12 @@
 from datetime import datetime
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, render_template
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
 from src.database.models import Actor, Movie, db, Gender
 from src.auth.auth import requires_auth, AuthError
+import markdown
 
 
 # Enable debug mode.
@@ -20,6 +21,9 @@ QUESTIONS_PER_PAGE = 10
 #     drinks = [drink.short() for drink in selection]
 #     current_drinks = drinks[start:end]
 #     return current_drinks
+app = Flask(
+    __name__, template_folder="src/templates"
+)  # Set the correct template folder
 
 
 def create_app(test_config=None):
@@ -49,6 +53,10 @@ def create_app(test_config=None):
         db.create_all()
 
     # ROUTES
+
+    @app.route("/")
+    def home():
+        return render_template("index.html")
 
     @app.route("/movies", methods=["GET"])
     @requires_auth("get:movies")
