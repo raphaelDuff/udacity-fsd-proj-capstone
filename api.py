@@ -5,8 +5,9 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
 from flask_migrate import Migrate
-from app.database.models import Actor, Movie, db, Gender
-from app.auth.auth import requires_auth, AuthError
+from database.models import Actor, Movie, db, Gender
+from auth.auth import requires_auth, AuthError
+import os
 
 # Enable debug mode.
 DEBUG = True
@@ -39,7 +40,8 @@ def create_app(test_config=None):
         return response
 
     # Initialize the app with the extension
-    app.config.from_object("app.database.config")
+    config_path = os.path.join(os.path.dirname(__file__), "database", "config.py")
+    app.config.from_pyfile(config_path, silent=False)
 
     if test_config:
         app.config.update(test_config)

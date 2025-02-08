@@ -4,9 +4,9 @@ import json
 from datetime import datetime
 from dotenv import load_dotenv
 from sqlalchemy import select
-from app.api import create_app, db
-from app.database.config import SQLALCHEMY_DATABASE_TEST_URI
-from app.database.models import Actor, Gender, Movie
+from api import create_app, db
+from database.config import SQLALCHEMY_DATABASE_TEST_URI
+from database.models import Actor, Gender, Movie
 
 
 load_dotenv()
