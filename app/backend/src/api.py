@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, abort, render_template
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
+from flask_migrate import Migrate
 from src.database.models import Actor, Movie, db, Gender
 from src.auth.auth import requires_auth, AuthError
 import markdown
@@ -392,6 +393,7 @@ def create_app(test_config=None):
 
 
 app = create_app()
+migrate = Migrate(app, db)
 
 if __name__ == "__main__":
     app.run()
