@@ -11,9 +11,7 @@ db_password = os.getenv("POSTGRESQL_PW")
 database_name = "casting"
 database_test_name = "casting_test"
 SQLALCHEMY_DATABASE_URI = (
-    f"postgresql://{db_user}:{db_password}@localhost:5432/{database_name}"
+    f"postgresql://{db_user}:{db_password}@host.docker.internal:5432/{database_name}"
 )
 
-SQLALCHEMY_DATABASE_TEST_URI = (
-    f"postgresql://{db_user}:{db_password}@localhost:5432/{database_test_name}"
-)
+SQLALCHEMY_DATABASE_TEST_URI = f"postgresql://{db_user}:{db_password}@host.docker.internal:5432/{database_test_name}"
