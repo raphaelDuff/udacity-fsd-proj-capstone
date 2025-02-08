@@ -1,11 +1,10 @@
-import os
 from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
-from .database.models import *
+from src.database.models import Actor, Movie, db, Gender
 from src.auth.auth import requires_auth, AuthError
 
 
@@ -23,7 +22,7 @@ QUESTIONS_PER_PAGE = 10
 #     return current_drinks
 
 
-def create_app(test_config=None, db=db):
+def create_app(test_config=None):
     app = Flask(__name__)
     load_dotenv()
     CORS(app, resources={r"/*": {"origins": "*"}})
@@ -384,5 +383,7 @@ def create_app(test_config=None, db=db):
     return app
 
 
+app = create_app()
+
 if __name__ == "__main__":
-    create_app()
+    app.run(debug=True, host="0.0.0.0")  # Run app

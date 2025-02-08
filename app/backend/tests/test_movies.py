@@ -2,7 +2,6 @@ import os
 import unittest
 import json
 from datetime import datetime
-import unittest.mock
 from dotenv import load_dotenv
 from sqlalchemy import select
 from src.api import create_app, db
@@ -141,7 +140,7 @@ class MoviesTestCase(unittest.TestCase):
         with self.app.app_context():
             selected_actor = db.session.scalars(stmt_select_actor).one_or_none()
 
-        res = self.client.patch(
+        self.client.patch(
             "/movies/1",
             json={
                 "title": "Fight Club",
