@@ -75,8 +75,7 @@ def create_app(test_config=None):
         return jsonify({"success": True, "movie": selected_movie.long()})
 
     @app.route("/movies", methods=["POST"])
-    @requires_auth("post:movies")
-    def post_movie(token):
+    def post_movie():
         try:
             data_json = request.get_json()
             if not data_json:
