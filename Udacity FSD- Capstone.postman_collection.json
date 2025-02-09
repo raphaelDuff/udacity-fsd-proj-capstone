@@ -606,7 +606,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://127.0.0.1:5000"
+			"value": "https://casting-raphaelduff-c4d854d2b126.herokuapp.com"
 		},
 		{
 			"key": "assistant",
