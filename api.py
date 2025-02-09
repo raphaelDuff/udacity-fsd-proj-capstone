@@ -26,7 +26,6 @@ QUESTIONS_PER_PAGE = 10
 def create_app(test_config=None):
     app = Flask(__name__)
     load_dotenv()
-    CORS(app, resources={r"/*": {"origins": "*"}})
 
     # CORS Headers
     @app.after_request
@@ -390,6 +389,7 @@ def create_app(test_config=None):
 
 
 app = create_app()
+CORS(app)
 migrate = Migrate(app, db)
 
 if __name__ == "__main__":
