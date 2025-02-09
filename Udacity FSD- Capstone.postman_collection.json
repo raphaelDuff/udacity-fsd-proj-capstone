@@ -1,0 +1,627 @@
+{
+	"info": {
+		"_postman_id": "780cb2b6-7125-4af2-a4da-d36f1f72cff4",
+		"name": "Udacity FSD: Capstone",
+		"description": "# 🚀Testing Capstone Project\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 Roles & token\n\nAll the tokens for the roles are stored in \"Variables\"",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9310441"
+	},
+	"item": [
+		{
+			"name": "Get Movies",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{base_url}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movies",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movies"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Movie Detail",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{assistant}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/movie-details/12",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie-details",
+						"12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Movie",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{producer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Yu Yu Hakisho\",\r\n    \"release_date\": \"08-04-2025\",\r\n    \"actors\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movies",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movies"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Post Movie - Fail 403 Expected",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{director}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Yu Yu Hakisho\",\r\n    \"release_date\": \"08-04-2025\",\r\n    \"actors\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movies",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movies"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Movie",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{producer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"title\": \"Pi\",\n    \"release_date\": 2000,\n    \"actors\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movies/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movies",
+						"2"
+					]
+				},
+				"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Movie",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{producer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/movies/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movies",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Movie - Fail 403 Expected",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{director}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/movies/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movies",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Actors",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{director}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/actors",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"actors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Actor Detail",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{director}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/actor-detail/5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"actor-detail",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Actor",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{director}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Kate Winslet\",\r\n    \"age\": 25,\r\n    \"gender\": \"Female\",\r\n    \"movies\": [3]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/actors",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"actors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Actor - Fail 403 Expected",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{assistant}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Mic Eletronics\",\r\n    \"age\": 17,\r\n    \"gender\": \"Male\",\r\n    \"movies\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/actors",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"actors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Actor",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{director}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Raphael Duff Prates\",\r\n    \"age\": 33,\r\n    \"gender\": \"Male\",\r\n    \"movies\": [11]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/actors/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"actors",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Actor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful DELETE request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{director}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/actors/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"actors",
+						"2"
+					]
+				},
+				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Actor - Fail 403 Expected",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful DELETE request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{assistant}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/actors/3",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"actors",
+						"3"
+					]
+				},
+				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:5000"
+		},
+		{
+			"key": "assistant",
+			"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVaQ3prRTdiS1FJWWZRbTVuNjA3VyJ9.eyJpc3MiOiJodHRwczovL2Rldi1kOGo2NjR3MzRjenE1Y2U4LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2N2E2ODlkYzVhOTQ5MmVkYzRiZjY0ZmIiLCJhdWQiOiJjYXN0aW5nIiwiaWF0IjoxNzM5MDY4NTUxLCJleHAiOjE3MzkxNTQ5NTEsInNjb3BlIjoiIiwiYXpwIjoiZDVoeUpIUHU5dUViSW8yTEtIaGd6VEZJQXBLNlg2WnEiLCJwZXJtaXNzaW9ucyI6WyJnZXQ6YWN0b3ItZGV0YWlscyIsImdldDphY3RvcnMiLCJnZXQ6bW92aWUtZGV0YWlscyIsImdldDptb3ZpZXMiXX0.kJAm5FOrwtYtSHf7z3fHs0WAcEaSCmPbP_iaHxHmS_MijjddWsfyx-LMofzN0x3PBuGl93OPAzgF9yZ1-Owy7NtP0IUR1O54k-GrmECIrB5xwb9SakD7aeKYQxiIq0_aiUXiSKsrEOP4eqEiXqDs684N_Uwbxkwv1pFIVH6OHjN9ojjMbypn9ykGSea77jNkmKp8GGbzKKzW4r3o5aOjSWjvVSDtjn_Z-PzlORbI09i8OX3sgQvo2VDAZcPLt66EFMc7dmki-XC_j27vP0wYueldVBKpFRl8Mq--hslvUxn3HTCfY4blARjMEWnb9_GG-Du4wieLIOF7jo_qx5UQMg",
+			"type": "string"
+		},
+		{
+			"key": "director",
+			"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVaQ3prRTdiS1FJWWZRbTVuNjA3VyJ9.eyJpc3MiOiJodHRwczovL2Rldi1kOGo2NjR3MzRjenE1Y2U4LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NmViYTgwMzBjZDdjOTdkYTIyNmIzNDIiLCJhdWQiOiJjYXN0aW5nIiwiaWF0IjoxNzM5MDY4OTE5LCJleHAiOjE3MzkxNTUzMTksInNjb3BlIjoiIiwiYXpwIjoiZDVoeUpIUHU5dUViSW8yTEtIaGd6VEZJQXBLNlg2WnEiLCJwZXJtaXNzaW9ucyI6WyJkZWw6YWN0b3JzIiwiZ2V0OmFjdG9yLWRldGFpbHMiLCJnZXQ6YWN0b3JzIiwiZ2V0Om1vdmllLWRldGFpbHMiLCJnZXQ6bW92aWVzIiwicGF0Y2g6YWN0b3IiLCJwYXRjaDptb3ZpZSIsInBvc3Q6YWN0b3JzIl19.nBIT7Md02xoDiQm6F-rEvwoDapjR1d_RJCnYM4ynT7ADXqyRRNu7L5RB5akV8xtyJlRPn7wGOJuSJap81OKAXSp1gxMl2eSijTaPiNXXwKmnHZAVzWRjGiGW0DYfI8TA2OC1uW7NAeENpr4ShZPSbZ2xI3HSlyWr2tkVR7bAT1BH0tehl8eYt3WMp04vBom1ox_pTYLBeTUwMmXKRbvDkjaEWxX3C4LX572XWW-BHGSjkP5i7IKIC7vD5Cwca0ilcbwRVWUC2XksDKyuvwHn-1pBBv8xkIzz0WIn2Nxmq3XSA3rHo653OK4mIlSZqEl-8ZQbbAQPYtsSRJLWnZn9XA",
+			"type": "string"
+		},
+		{
+			"key": "producer",
+			"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVaQ3prRTdiS1FJWWZRbTVuNjA3VyJ9.eyJpc3MiOiJodHRwczovL2Rldi1kOGo2NjR3MzRjenE1Y2U4LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExMTk1NTU4NTE2MDMyMDU2MDM1OCIsImF1ZCI6ImNhc3RpbmciLCJpYXQiOjE3MzkwNTQyNDcsImV4cCI6MTczOTE0MDY0Nywic2NvcGUiOiIiLCJhenAiOiJkNWh5SkhQdTl1RWJJbzJMS0hoZ3pURklBcEs2WDZacSIsInBlcm1pc3Npb25zIjpbImRlbDphY3RvcnMiLCJkZWw6bW92aWVzIiwiZ2V0OmFjdG9yLWRldGFpbHMiLCJnZXQ6YWN0b3JzIiwiZ2V0Om1vdmllLWRldGFpbHMiLCJnZXQ6bW92aWVzIiwicGF0Y2g6YWN0b3IiLCJwYXRjaDptb3ZpZSIsInBvc3Q6YWN0b3JzIiwicG9zdDptb3ZpZXMiXX0.TlNm3dOzCLIC2blD0hhNlti7ykAzwuhtTB9P3-aWV1QNSp4EjyLd15NdW76zPxRIrPzozCMEmRr6zjfaWIZ0m9Xc1qTDkM8CGhDvg7M7VYC0Mnjzvt2AMQxCLXTZu3cLS6wMxD9ki9Z27A8poxSjcmEaRkC3r3JeYNWPuDThhlRXMmryk-nyweus4ArQti86Zqr-m2nliCK45TcAfSBDB4SjIgrDa9uLbI2wZYCrOZRra1JWx7-bH-YKUUFi-imxi2StzsP9Bk4hCerMqaa1jxWkbO1XLHdNfdn8AS2482Ly7n3edY7oqrJbBdlq2M69f6RArnt3jOulSJLmFCYU3A",
+			"type": "string"
+		}
+	]
+}

@@ -9,18 +9,16 @@ from database.models import Actor, Movie, db, Gender
 from auth.auth import requires_auth, AuthError
 import os
 
-# Enable debug mode.
-DEBUG = True
-QUESTIONS_PER_PAGE = 10
+ITEMS_PER_PAGE = 10
 
 
-# def paginate_drinks(request, selection, page_limit_number=QUESTIONS_PER_PAGE):
-#     page = request.args.get("page", 1, type=int)
-#     start = (page - 1) * page_limit_number
-#     end = start + page_limit_number
-#     drinks = [drink.short() for drink in selection]
-#     current_drinks = drinks[start:end]
-#     return current_drinks
+def paginate_items(request, selection, page_limit_number=ITEMS_PER_PAGE):
+    page = request.args.get("page", 1, type=int)
+    start = (page - 1) * page_limit_number
+    end = start + page_limit_number
+    items = [item.short() for item in selection]
+    current_items = items[start:end]
+    return current_items
 
 
 def create_app(test_config=None):
@@ -60,7 +58,7 @@ def create_app(test_config=None):
     def get_movies(token):
         stmt_select_all_movies = select(Movie).order_by(Movie.id)
         movies = db.session.scalars(stmt_select_all_movies).all()
-        list_movies = [movie.short() for movie in movies]
+        list_movies = paginate_items(request, movies)
         if len(movies) == 0:
             abort(404)
         return jsonify({"success": True, "movies": list_movies})
@@ -75,7 +73,8 @@ def create_app(test_config=None):
         return jsonify({"success": True, "movie": selected_movie.long()})
 
     @app.route("/movies", methods=["POST"])
-    def post_movie():
+    @requires_auth("post:movies")
+    def post_movie(token):
         try:
             data_json = request.get_json()
             if not data_json:
@@ -203,7 +202,7 @@ def create_app(test_config=None):
     def get_actors(token):
         stmt_select_all_actors = select(Actor).order_by(Actor.id)
         actors = db.session.scalars(stmt_select_all_actors).all()
-        list_actors = [actor.long() for actor in actors]
+        list_actors = paginate_items(request, actors)
         if len(actors) == 0:
             abort(404)
         return jsonify({"success": True, "actors": list_actors})

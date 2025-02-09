@@ -13,9 +13,11 @@ Other projects from this course:
 
 The motivation behind this project was to demonstrate the skills and knowledge acquired throughout the Udacity Full Stack Developer Nanodegree program.  It serves as a practical application of building a complete backend API with best practices, including database interaction, API design, security, and deployment.     
 
-## Hosted API URL
+## Hosted API URL - Heroku
 
-The hosted API is currently deployed on [Render](https://render.com) and can be accessed at: [https://fsnd-capstone-api.onrender.com/](https://fsnd-capstone-api.onrender.com/)  _(Please note that this URL might change. Check the repository for the latest deployed URL.)_
+The hosted API is currently deployed on [Casting RaphaelDuff](https://casting-raphaelduff-c4d854d2b126.herokuapp.com/)
+
+For testing you can use the collecton on Postman (all tokens are here): `Udacity FSD- Capstone.postman_collection`
 
 ## Project Dependencies
 
@@ -88,13 +90,6 @@ This project is designed to be easily containerized with Docker for deployment.
     
   *   Replace `user`, `password`, and `database_name` with your PostgreSQL credentials.
   *   `host.docker.internal` is used to connect to your host's postgresql running in your machine if you are running in docker desktop. If you are running your postgresql in a docker container, you must use the container name or ip address in this enviroment variable.
-
-3.  **Deployment to Render:**
-
-    *   Create a Render account.
-    *   Connect your GitHub repository.
-    *   Render will automatically build and deploy your application.
-    *   Set the `DATABASE_URL` environment variable in the Render dashboard.
 
 ## Authentication and RBAC
 
